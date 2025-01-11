@@ -1,0 +1,11 @@
+# specific directories
+dist/
+.venv/
+.misc/
+.vscode/
+
+# general directories
+**/__pycache__/
+
+# specific files
+clean.sh
