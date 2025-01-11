@@ -22,9 +22,10 @@ class TestSuite:
         If you define a custom constructor, make sure to call
         super().__init__() as it will automatically find all test functions.
         """
+        self._prefix: tuple[str, ...] = ("test_",)
         self._test_functions: list[callable] = []
         for function in dir(self):
-            if callable(getattr(self, function)) and function.startswith("test_"):
+            if callable(getattr(self, function)) and function.startswith(self._prefix):
                 self._test_functions.append(getattr(self, function))
 
     def _run_tests(self, tests: list[callable]) -> bool:
@@ -87,22 +88,24 @@ class TestSuite:
         Returns:
             bool: True if all tests pass, False otherwise.
         """
+        if not hasattr(self, "_test_functions"):
+            raise RuntimeError("Call super().__init__() in your constructor.")
 
-        assert self._test_functions, "No tests found in test suite"
+        assert len(self._test_functions) > 0, "No tests found in test suite"
 
         print("\n[~] SEQUENTIAL TEST RUN\n")
         sequential_results: dict[str, any] = self._run_tests(self._test_functions)
-        sequential_passed: bool = self._process_results(sequential_results)
-        result: bool = sequential_passed
+        sequential_outcome: bool = self._process_results(sequential_results)
+        result: bool = sequential_outcome
 
         if random_order:
-            if not sequential_passed:
+            if not sequential_outcome:
                 print("[~] TESTS MUST PASS IN SEQUENTIAL ORDER FIRST\n")
             else:
                 print("[~] RANDOM TEST RUN\n")
                 random.shuffle(self._test_functions)
                 random_results: dict[str, any] = self._run_tests(self._test_functions)
-                random_passed: bool = self._process_results(random_results)
-                result = random_passed
+                random_outcome: bool = self._process_results(random_results)
+                result = random_outcome
 
         return result

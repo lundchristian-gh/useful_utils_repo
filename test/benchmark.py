@@ -1,5 +1,3 @@
-"""Testing the Benchmark class"""
-
 import os
 import sys
 

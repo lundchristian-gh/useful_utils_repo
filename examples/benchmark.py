@@ -1,5 +1,3 @@
-"""Example using the Benchmark class"""
-
 import os
 import sys
 from functools import reduce

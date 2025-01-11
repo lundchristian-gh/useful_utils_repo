@@ -1,5 +1,3 @@
-"""Example using the TestSuite class"""
-
 import os
 import sys
 
@@ -14,7 +12,7 @@ class TestStuff(TestSuite):
     """A simple example test suite for testing your code"""
 
     def __init__(self) -> None:
-        """Remember to call super().__init__() in the constructor"""
+        """Remember to call super().__init__() in the constructor if it is overridden."""
         self.local_var: int = 42
         super().__init__()
 

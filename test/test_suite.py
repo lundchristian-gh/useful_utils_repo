@@ -12,8 +12,40 @@ class TestTestSuite(TestSuite):
     """Testing the TestSuite using the TestSuite"""
 
     def test_no_functions(self) -> bool:
-        """Test that no functions will result in a failure"""
+        """Tests must be implemented in order to run."""
         uut = TestSuite()
+        try:
+            uut.run()
+            return False
+        except AssertionError:
+            return True
+
+    def test_forgot_override_ctor(self) -> bool:
+        """Overridden constructors must call the base constructor."""
+
+        class TestSuiteUUT(TestSuite):
+            def __init__(self):
+                pass
+
+            def test_dummy(self):
+                return True
+
+        uut = TestSuiteUUT()
+        try:
+            uut.run()
+            return False
+        except RuntimeError:
+            return True
+
+    def test_invalid_return_value(self) -> bool:
+        """Test functions must return true or false."""
+
+        class TestSuiteUUT(TestSuite):
+
+            def test_invalid_return(self):
+                return 3
+
+        uut = TestSuiteUUT()
         try:
             uut.run()
             return False
