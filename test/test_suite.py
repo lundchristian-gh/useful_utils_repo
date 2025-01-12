@@ -52,6 +52,10 @@ class TestTestSuite(TestSuite):
         except AssertionError:
             return True
 
+    def test_failure(self) -> bool:
+        """Will fail."""
+        return False
+
 
 def main() -> None:
     suite = TestTestSuite()
