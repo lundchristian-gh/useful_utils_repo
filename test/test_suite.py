@@ -55,7 +55,7 @@ class TestTestSuite(TestSuite):
 
 def main() -> None:
     suite = TestTestSuite()
-    suite.run()
+    sys.exit(not suite.run())
 
 
 if __name__ == "__main__":
