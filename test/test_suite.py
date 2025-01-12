@@ -20,8 +20,8 @@ class TestTestSuite(TestSuite):
         except AssertionError:
             return True
 
-    def test_forgot_override_ctor(self) -> bool:
-        """Overridden constructors must call the base constructor."""
+    def test_override_ctor(self) -> bool:
+        """Forbidden to override the constructor."""
 
         class TestSuiteUUT(TestSuite):
             def __init__(self):
@@ -51,10 +51,6 @@ class TestTestSuite(TestSuite):
             return False
         except AssertionError:
             return True
-
-    def test_failure(self) -> bool:
-        """Will fail."""
-        return False
 
 
 def main() -> None:

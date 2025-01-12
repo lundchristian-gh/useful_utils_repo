@@ -1,0 +1,12 @@
+
+[~] SEQUENTIAL TEST RUN
+
+
+[~] SEQUENTIAL TEST RUN
+
+[92m[+] PASS[0m	Overridden constructors must call the base constructor.
+[92m[+] PASS[0m	Test functions must return true or false.
+[92m[+] PASS[0m	Tests must be implemented in order to run.
+
+3 OF 3 (100.00%) TESTS PASSED
+

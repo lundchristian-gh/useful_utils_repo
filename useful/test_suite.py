@@ -1,39 +1,38 @@
 import random
-
-from useful.common import okay, fail
+from useful.common import okay, fail, Log
 
 
 class TestSuite:
     """
     TestSuite enables simple testing of your code.
-
-    Inherit from the class, and name all your test functions like so:
-
-    def test_*(self) -> bool
-
+    Inherit from the class, and name all your test functions with the prefixes.
     Make sure to return true or false depending on the output.
-
-    If you define a constructor, make sure to call super().__init__().
+    NB: Do not override the constructor.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        log: Log = Log(),
+        random_order: bool = False,
+        save_artifact: bool = False,
+        prefix: tuple[str, ...] = ("test_",),
+    ) -> None:
         """Initializes the test suite with all test functions.
-
         If you define a custom constructor, make sure to call
         super().__init__() as it will automatically find all test functions.
         """
-        self._prefix: tuple[str, ...] = ("test_",)
+        self._log: Log = log
+        self._prefix: tuple[str, ...] = prefix
+        self._random_order: bool = random_order
+        self._save_artifact: bool = save_artifact
+
         self._test_functions: list[callable] = []
         for function in dir(self):
             if callable(getattr(self, function)) and function.startswith(self._prefix):
                 self._test_functions.append(getattr(self, function))
 
     def _run_tests(self, tests: list[callable]) -> bool:
-        """Note: Note: Intended as private method!
-
-        Runs all the tests in the list and prints the results.
-        """
-
+        """Note: Note: Intended as private method!"""
         passed: int = 0
         total: int = len(tests)
         results: list[tuple[str, bool]] = []
@@ -52,60 +51,55 @@ class TestSuite:
         }
 
     def _process_results(self, results: dict[str, any]) -> bool:
-        """Note: Note: Intended as private method!
-
-        Processes the results of the test run and prints them to the console.
-        """
+        """Note: Intended as private method!"""
         outcomes: list[tuple[str, bool]] = results["outcomes"]
         passed: int = results["passed"]
         num_tests: int = results["total"]
         percent: float = results["percent"]
-        self._print_results(outcomes, passed, num_tests, percent)
+        self._log_results(outcomes, passed, num_tests, percent)
         return passed == num_tests
 
-    def _print_results(
+    def _log_results(
         self,
         outcomes: list[tuple[str, bool]],
         passed: int,
         num_tests: int,
         percent: float,
     ) -> None:
-        """Note: Note: Intended as private method!
-
-        Prints the results of the test run to the console.
-        """
+        """Note: Note: Intended as private method!"""
         for name, outcome in outcomes:
-            print(f"{okay('PASS') if outcome else fail('FAIL')}\t{name}")
-        print(f"\n{passed} OF {num_tests} ({percent:.2f}%) TESTS PASSED\n")
+            if outcome:
+                self._log.green(f"PASS\t{name}")
+            else:
+                self._log.red(f"FAIL\t{name}")
+        self._log.plain(f"\n{passed} OF {num_tests} ({percent:.2f}%) TESTS PASSED\n")
 
-    def run(self, random_order: bool = False) -> bool:
+    def run(self) -> bool:
         """Runs all the tests in the test suite.
-
-        Args:
-            random_order (bool):
-                If True, tests will be run in a random order. Defaults to False.
-
         Returns:
-            bool: True if all tests pass, False otherwise.
+            bool: True if all tests pass, otherwise False.
         """
         if not hasattr(self, "_test_functions"):
-            raise RuntimeError("Call super().__init__() in your constructor.")
-
+            raise RuntimeError("Do not override the constructor.")
         assert len(self._test_functions) > 0, "No tests found in test suite"
 
-        print("\n[~] SEQUENTIAL TEST RUN\n")
+        self._log.plain("\n[~] SEQUENTIAL TEST RUN\n")
         sequential_results: dict[str, any] = self._run_tests(self._test_functions)
         sequential_outcome: bool = self._process_results(sequential_results)
         result: bool = sequential_outcome
 
-        if random_order:
+        if self._random_order:
             if not sequential_outcome:
-                print("[~] TESTS MUST PASS IN SEQUENTIAL ORDER FIRST\n")
+                self._log.plain("[~] TESTS MUST PASS IN SEQUENTIAL ORDER FIRST\n")
             else:
-                print("[~] RANDOM TEST RUN\n")
+                self._log.plain("[~] RANDOM TEST RUN\n")
                 random.shuffle(self._test_functions)
                 random_results: dict[str, any] = self._run_tests(self._test_functions)
                 random_outcome: bool = self._process_results(random_results)
                 result = random_outcome
+
+        self._log.print_terminal()
+        if self._save_artifact:
+            self._log.save_text("test_results.txt")
 
         return result
