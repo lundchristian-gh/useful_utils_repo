@@ -10,29 +10,39 @@ class Log:
         self._text: list[str] = []
         self._terminal: list[str] = []
 
-    def plain(self, msg: str) -> None:
+    def _plain(self, msg: str) -> None:
         formatted_msg = f"{msg}"
         self._html.append(f"<p>{formatted_msg}</p>")
         self._text.append(formatted_msg)
         self._terminal.append(formatted_msg)
 
-    def green(self, msg: str) -> None:
+    def _green(self, msg: str) -> None:
         formatted_msg = f"[+] {msg}"
         self._html.append(f"<p style='color: green;'>{formatted_msg}</p>")
         self._text.append(formatted_msg)
         self._terminal.append(f"\033[92m{formatted_msg}\033[0m")
 
-    def orange(self, msg: str) -> None:
+    def _orange(self, msg: str) -> None:
         formatted_msg = f"[~] {msg}"
         self._html.append(f"<p style='color: orange;'>{formatted_msg}</p>")
         self._text.append(formatted_msg)
         self._terminal.append(f"\033[93m{formatted_msg}\033[0m")
 
-    def red(self, msg: str) -> None:
+    def _red(self, msg: str) -> None:
         formatted_msg = f"[-] {msg}"
         self._html.append(f"<p style='color: red;'>{formatted_msg}</p>")
         self._text.append(formatted_msg)
         self._terminal.append(f"\033[91m{formatted_msg}\033[0m")
+
+    def write(self, msg: str, color: str = "plain"):
+        if color == "red":
+            self._red(msg)
+        elif color == "green":
+            self._green(msg)
+        elif color == "orange":
+            self._orange(msg)
+        else:  # plain
+            self._plain(msg)
 
     def save_html(self, filename: str) -> None:
         """Save the logs in HTML format."""

@@ -22,12 +22,9 @@ jobs:
           python-version: "3.12"
 
         # GitHub Actions automatically fails the job if the script exits with a non-zero code
-      - name: Run tests, failure if non-zero exit code
+      - name: Run tests with output, failure if non-zero exit code
         run: |
           python3 test/test_suite.py
-
-      - name: Display test results
-        run: cat test_results.txt
 
       - name: Upload test results artifact
         uses: actions/upload-artifact@v4
